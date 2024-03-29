@@ -4,22 +4,28 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"serveit/config"
+	"serveit/net/connector"
+	"serveit/net/polemo"
 	"syscall"
 )
 
 // Application 应用
 type Application struct {
 	components []IComponent
-	profile    string
+	profile    *config.Profile
+	parser     *polemo.Parser
 }
 
 func NewApplication(opts ...Option) *Application {
 	app := &Application{}
-	app.components = make([]IComponent, 0)
-
 	for _, opt := range opts {
 		opt(app)
 	}
+	app.components = make([]IComponent, 0)
+	app.parser = polemo.NewPolemoParser(app)
+	app.parser.SetConnector(connector.NewTcpConnector(app))
+
 	return nil
 }
 
@@ -64,4 +70,8 @@ func (a *Application) Find(name string) bool {
 		}
 	}
 	return false
+}
+
+func (a *Application) GetProfile() *config.Profile {
+	return a.profile
 }
