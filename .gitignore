@@ -21,3 +21,5 @@
 go.work
 
 _config/
+.idea
+_test/
